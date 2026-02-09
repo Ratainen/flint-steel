@@ -55,7 +55,9 @@ mod tests {
     use dotenvy::dotenv;
     use flint_core::test_spec;
     use flint_core::utils::get_test_path;
+    use flint_core::results::TestSummary;
     use std::env::var;
+    use std::fs;
     use std::path::PathBuf;
     use test_spec::TestSpec;
 
@@ -121,6 +123,15 @@ mod tests {
         }
         name == pattern
     }
+    fn save_summary(summary: &TestSummary) {
+        let path = PathBuf::from("log/flint_summary.json");
+        if let Some(parent) = path.parent() {
+            std::fs::create_dir_all(parent).expect("TODO: panic message");
+        }
+        fs::write(&path, summary.format_concise_summary()).expect("failed to write flint_summary.json");
+        println!("Summary saved to {}", path.display());
+    }
+
     fn generate_test_specs(paths: Vec<PathBuf>) -> Vec<TestSpec> {
         paths
             .iter()
@@ -151,6 +162,7 @@ mod tests {
         // Run the test
         let summary = runner.run_tests(&specs);
         summary.print_concise_summary();
+        save_summary(&summary);
         assert_eq!(summary.failed_tests, 0, "Not all flint tests passed!");
     }
 
@@ -184,7 +196,8 @@ mod tests {
         let adapter = SteelAdapter::new();
         let runner = TestRunner::new(&adapter);
         let summary = runner.run_tests(&specs);
-        summary.print_ci();
+        summary.print_concise_summary();
+        save_summary(&summary);
         assert_eq!(summary.failed_tests, 0, "No tests were run");
     }
 }
