@@ -12,6 +12,7 @@ use crate::world::SteelTestWorld;
 ///
 /// This adapter creates test worlds that use the real steel-core World
 /// with RAM-only storage for instant chunk creation.
+#[derive(Clone)]
 pub struct SteelAdapter {
     /// Server info for identification
     info: ServerInfo,
@@ -53,12 +54,13 @@ mod tests {
     use crate::init_test_registries;
     use crate::{TestLoader, TestRunner};
     use dotenvy::dotenv;
-    use flint_core::test_spec;
+    use flint_core::{test_spec, TestRunConfig};
     use flint_core::utils::get_test_path;
     use flint_core::results::TestSummary;
     use std::env::var;
     use std::fs;
     use std::path::PathBuf;
+    use std::sync::Arc;
     use test_spec::TestSpec;
 
     fn init_env() {
@@ -126,7 +128,7 @@ mod tests {
     fn save_summary(summary: &TestSummary) {
         let path = PathBuf::from("log/flint_summary.json");
         if let Some(parent) = path.parent() {
-            std::fs::create_dir_all(parent).expect("TODO: panic message");
+            fs::create_dir_all(parent).expect("TODO: panic message");
         }
         fs::write(&path, summary.format_concise_summary()).expect("failed to write flint_summary.json");
         println!("Summary saved to {}", path.display());
@@ -136,7 +138,7 @@ mod tests {
         paths
             .iter()
             .filter_map(|path| {
-                TestSpec::from_file(path)
+                TestSpec::from_file(path, false)
                     .map_err(|e| println!("Failed to load {}: {}", path.display(), e))
                     .ok()
             })
@@ -157,7 +159,7 @@ mod tests {
 
         // Create adapter and runner
         let adapter = SteelAdapter::new();
-        let runner = TestRunner::new(&adapter);
+        let runner = TestRunner::new(Arc::new(adapter), TestRunConfig::default());
 
         // Run the test
         let summary = runner.run_tests(&specs);
@@ -194,7 +196,11 @@ mod tests {
         let specs: Vec<TestSpec> = generate_test_specs(paths);
 
         let adapter = SteelAdapter::new();
-        let runner = TestRunner::new(&adapter);
+        let runner = TestRunner::new(Arc::new(adapter), TestRunConfig{
+            debug_enabled: false,
+            parallel: false,
+            max_parallel_worlds: 16
+        });
         let summary = runner.run_tests(&specs);
         summary.print_concise_summary();
         save_summary(&summary);
