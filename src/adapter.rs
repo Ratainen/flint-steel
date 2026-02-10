@@ -159,7 +159,7 @@ mod tests {
 
         // Create adapter and runner
         let adapter = SteelAdapter::new();
-        let runner = TestRunner::new(Arc::new(adapter), TestRunConfig::default());
+        let runner = TestRunner::new(Arc::new(adapter));
 
         // Run the test
         let summary = runner.run_tests(&specs);
@@ -196,11 +196,7 @@ mod tests {
         let specs: Vec<TestSpec> = generate_test_specs(paths);
 
         let adapter = SteelAdapter::new();
-        let runner = TestRunner::new(Arc::new(adapter), TestRunConfig{
-            debug_enabled: false,
-            parallel: false,
-            max_parallel_worlds: 16
-        });
+        let runner = TestRunner::new(Arc::new(adapter));
         let summary = runner.run_tests(&specs);
         summary.print_concise_summary();
         save_summary(&summary);
