@@ -54,9 +54,9 @@ mod tests {
     use crate::init_test_registries;
     use crate::{TestLoader, TestRunner};
     use dotenvy::dotenv;
-    use flint_core::{test_spec, TestRunConfig};
-    use flint_core::utils::get_test_path;
     use flint_core::results::TestSummary;
+    use flint_core::test_spec;
+    use flint_core::utils::get_test_path;
     use std::env::var;
     use std::fs;
     use std::path::PathBuf;
@@ -130,7 +130,7 @@ mod tests {
         if let Some(parent) = path.parent() {
             fs::create_dir_all(parent).expect("TODO: panic message");
         }
-        fs::write(&path, summary.format_concise_summary()).expect("failed to write flint_summary.json");
+        fs::write(&path, summary.create_ci_output()).expect("failed to write flint_summary.json");
         println!("Summary saved to {}", path.display());
     }
 
