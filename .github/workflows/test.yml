@@ -27,13 +27,6 @@ jobs:
       - name: Add flint-steel to workspace
         run: sed -i 's/"steel-crypto",/"steel-crypto",\n    "flint-steel",/' steel/SteelMC/Cargo.toml
 
-      - name: Clone flint-core
-        uses: actions/checkout@v4
-        with:
-          repository: JunkyDeveloper/flint-core
-          token: ${{ secrets.PRIVATE_REPO_TOKEN }}
-          path: flint/flint-core
-
       - name: Clone JunkysGenerator
         uses: actions/checkout@v4
         with:
