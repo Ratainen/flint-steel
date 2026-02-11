@@ -1,0 +1,69 @@
+name: Flint Tests
+
+on:
+  push:
+  pull_request:
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Clone SteelMC
+        uses: actions/checkout@v4
+        with:
+          repository: SteelMC/SteelMC
+          ref: dimensions
+          token: ${{ secrets.PRIVATE_REPO_TOKEN }}
+          path: steel/SteelMC
+
+      - name: Checkout flint-steel
+        uses: actions/checkout@v4
+        with:
+          path: steel/SteelMC/flint-steel
+
+      - name: Add flint-steel to workspace
+        run: sed -i 's/"steel-crypto",/"steel-crypto",\n    "flint-steel",/' steel/SteelMC/Cargo.toml
+
+      - name: Clone flint-core
+        uses: actions/checkout@v4
+        with:
+          repository: JunkyDeveloper/flint-core
+          token: ${{ secrets.PRIVATE_REPO_TOKEN }}
+          path: flint/flint-core
+
+      - name: Clone JunkysGenerator
+        uses: actions/checkout@v4
+        with:
+          repository: FlintTestMC/JunkysGenerator
+          path: flint/FlintTestGenerator
+
+      - name: Setup Rust nightly
+        uses: dtolnay/rust-toolchain@nightly
+
+      - name: Cache Rust dependencies
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: |
+            steel/SteelMC -> target
+            flint/FlintTestGenerator -> target
+
+      - name: Build test generators
+        working-directory: flint/FlintTestGenerator
+        run: cargo build --release -p create-portal -p destroy-portal
+
+      - name: Generate create-portal tests
+        working-directory: flint/FlintTestGenerator/create-portal
+        run: ../target/release/create-portal
+
+      - name: Generate destroy-portal tests
+        working-directory: flint/FlintTestGenerator/destroy-portal
+        run: ../target/release/destroy-portal
+
+      - name: Run flint-steel tests
+        working-directory: steel/SteelMC
+        env:
+          TEST_PATH: ${{ github.workspace }}/flint/FlintTestGenerator
+        run: cargo test --lib -p flint-steel
