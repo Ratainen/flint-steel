@@ -24,7 +24,7 @@ jobs:
           path: steel/SteelMC/flint-steel
 
       - name: Add flint-steel to workspace
-        run: sed -i 's/"steel-crypto",\?/"steel-crypto",\n    "flint-steel",/' steel/SteelMC/Cargo.toml
+        run: sed -i 's/"steel-crypto",/"steel-crypto",\n    "flint-steel",/' steel/SteelMC/Cargo.toml
 
       - name: Clone JunkysGenerator
         uses: actions/checkout@v4
