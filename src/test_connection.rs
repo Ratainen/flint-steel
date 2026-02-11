@@ -52,6 +52,7 @@ impl FlintConnection {
     }
 
     /// Gets all recorded events.
+    #[must_use]
     pub fn get_events(&self) -> Vec<PlayerEvent> {
         self.events.lock().clone()
     }
@@ -62,6 +63,7 @@ impl FlintConnection {
     }
 
     /// Returns the number of recorded events.
+    #[must_use]
     pub fn event_count(&self) -> usize {
         self.events.lock().len()
     }

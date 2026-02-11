@@ -71,7 +71,7 @@ jobs:
         working-directory: steel/SteelMC
         env:
           TEST_PATH: ${{ github.workspace }}/flint/JunkysGenerator
-        run: cargo test --lib -p flint-steel test_run_all_flint_benchmarks
+        run: cargo test --lib -p flint-steel test_run_all_flint_benchmarks -- --nocapture
 
       - name: Upload Flint summary
         if: always()
