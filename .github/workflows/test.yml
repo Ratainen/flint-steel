@@ -48,17 +48,30 @@ jobs:
 
       - name: Generate create-portal tests
         working-directory: flint/JunkysGenerator/create-portal
-        run: ../target/release/create-portal
+        run: cargo run --release -p create-portal
 
       - name: Generate destroy-portal tests
         working-directory: flint/JunkysGenerator/destroy-portal
-        run: ../target/release/destroy-portal
+        run: cargo run --release -p destroy-portal
+
+      - name: Check generated tests for created-portal
+        working-directory: flint/JunkysGenerator/create-portal
+        run: find ./test -type f -printf '.' | wc -c
+
+
+      - name: Check generated tests for destroy-portal
+        working-directory: flint/JunkysGenerator/destroy-portal
+        run: find ./test -type f -printf '.' | wc -c
+
+      - name: Clean up generator build artifacts
+        run: rm -rf flint/JunkysGenerator/target
 
       - name: Run flint-steel tests
+        timeout-minutes: 15
         working-directory: steel/SteelMC
         env:
           TEST_PATH: ${{ github.workspace }}/flint/JunkysGenerator
-        run: cargo test --lib -p flint-steel
+        run: cargo test --lib -p flint-steel test_run_all_flint_benchmarks
 
       - name: Upload Flint summary
         if: always()
