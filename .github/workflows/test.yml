@@ -21,10 +21,7 @@ jobs:
       - name: Checkout flint-steel
         uses: actions/checkout@v4
         with:
-          path: steel/SteelMC/flint-steel
-
-      - name: Add flint-steel to workspace
-        run: sed -i 's/"steel-crypto",/"steel-crypto",\n    "flint-steel",/' steel/SteelMC/Cargo.toml
+          path: steel/flint-steel
 
       - name: Clone JunkysGenerator
         uses: actions/checkout@v4
@@ -58,7 +55,6 @@ jobs:
         working-directory: flint/JunkysGenerator/create-portal
         run: find ./test -type f -printf '.' | wc -c
 
-
       - name: Check generated tests for destroy-portal
         working-directory: flint/JunkysGenerator/destroy-portal
         run: find ./test -type f -printf '.' | wc -c
@@ -68,7 +64,7 @@ jobs:
 
       - name: Run flint-steel tests
         timeout-minutes: 15
-        working-directory: steel/SteelMC
+        working-directory: steel/flint-steel
         env:
           TEST_PATH: ${{ github.workspace }}/flint/JunkysGenerator
         run: cargo test --release --lib -p flint-steel test_run_all_flint_benchmarks -- --nocapture
