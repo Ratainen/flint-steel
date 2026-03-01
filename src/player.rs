@@ -70,7 +70,10 @@ impl SteelTestPlayer {
             p
         });
 
-        Self { player, connection: test_conn }
+        Self {
+            player,
+            connection: test_conn,
+        }
     }
 
     /// Gets the connection's recorded events (for test assertions).
