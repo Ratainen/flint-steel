@@ -45,7 +45,7 @@ pub use world::SteelTestWorld;
 pub use flint_core::{TestLoader, TestRunner};
 
 use std::sync::{Arc, LazyLock, OnceLock};
-use steel_core::config::WordGeneratorTypes;
+use steel_core::config::WorldGeneratorTypes;
 use steel_core::{behavior, config};
 use steel_registry::{REGISTRY, Registry};
 use tokio::runtime;
@@ -96,7 +96,7 @@ fn init_config() {
         world_storage_config: config::WorldStorageConfig::Disk {
             path: "world".to_string(),
         },
-        world_generator: WordGeneratorTypes::Empty,
+        world_generator: WorldGeneratorTypes::Empty,
     });
 
     INIT.call_once(|| {
