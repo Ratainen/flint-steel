@@ -12,19 +12,19 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Clone SteelMC
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           repository: JunkyDeveloper/SteelMC
           ref: dimensions_new
           path: steel/SteelMC
 
       - name: Checkout flint-steel
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           path: steel/flint-steel
 
       - name: Clone JunkysGenerator
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           repository: FlintTestMC/JunkysGenerator
           path: flint/JunkysGenerator
@@ -71,7 +71,7 @@ jobs:
 
       - name: Upload Flint summary
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: flint-summary
           path: steel/SteelMC/flint-steel/log/flint_summary.json
