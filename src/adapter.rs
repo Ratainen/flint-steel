@@ -55,13 +55,11 @@ mod tests {
     use crate::{TestLoader, TestRunner};
     use dotenvy::dotenv;
     use flint_core::results::TestSummary;
-    use flint_core::test_spec;
     use flint_core::utils::get_test_path;
     use std::env::var;
     use std::fs;
     use std::path::PathBuf;
     use std::sync::Arc;
-    use test_spec::TestSpec;
 
     fn init_env() {
         dotenv().ok();
@@ -134,17 +132,6 @@ mod tests {
         println!("Summary saved to {}", path.display());
     }
 
-    fn generate_test_specs(paths: Vec<PathBuf>) -> Vec<TestSpec> {
-        paths
-            .iter()
-            .filter_map(|path| {
-                TestSpec::from_file(path, false)
-                    .map_err(|e| println!("Failed to load {}: {}", path.display(), e))
-                    .ok()
-            })
-            .collect()
-    }
-
     #[test]
     fn test_run_flint_selected() {
         init_test_registries();
@@ -155,7 +142,7 @@ mod tests {
         let loader = TestLoader::new(&test_path, true)
             .unwrap_or_else(|e| panic!("error while loading test files: {e}"));
         let paths = collect_filtered_paths(&loader);
-        let specs: Vec<TestSpec> = generate_test_specs(paths);
+        let specs = loader.load_specs(&paths).unwrap_or_default();
 
         // Create adapter and runner
         let adapter = SteelAdapter::new();
@@ -192,8 +179,7 @@ mod tests {
 
         println!("Found {} test(s) to run", paths.len());
 
-        // Load all test specs from paths
-        let specs: Vec<TestSpec> = generate_test_specs(paths);
+        let specs = loader.load_specs(&paths).unwrap_or_default();
 
         let adapter = SteelAdapter::new();
         let runner = TestRunner::new(Arc::new(adapter));
