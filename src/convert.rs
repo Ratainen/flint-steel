@@ -3,8 +3,8 @@
 use flint_core::Block;
 use flint_core::test_spec::BlockFace;
 use rustc_hash::FxHashMap;
-use steel_registry::REGISTRY;
 use steel_registry::blocks::properties::Direction;
+use steel_registry::{REGISTRY, RegistryExt};
 use steel_utils::{BlockPos as SteelBlockPos, BlockStateId, Identifier};
 
 /// Convert a Flint block specification to a `SteelMC` `BlockStateId`.
