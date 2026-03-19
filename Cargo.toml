@@ -18,6 +18,7 @@ steel-protocol = { git = "https://github.com/Steel-Foundation/SteelMC.git" }
 steel-registry = { git = "https://github.com/Steel-Foundation/SteelMC.git" }
 steel-utils = { git = "https://github.com/Steel-Foundation/SteelMC.git" }
 
+glam = "0.32"
 # UUID
 uuid = { version = "1.20", features = ["serde", "v4"] }
 
@@ -77,4 +78,3 @@ missing_const_for_fn = "warn"
 all = { level = "warn", priority = -1 }
 pedantic = { level = "warn", priority = -2 }
 unwrap_used = { level = "warn", priority = -3 }
-
