@@ -9,6 +9,7 @@ use std::sync::Arc;
 
 use flint_core::test_spec::{BlockFace, PlayerSlot};
 use flint_core::{BlockPos, FlintPlayer, Item};
+use glam::DVec3;
 use steel_core::behavior::BlockHitResult;
 use steel_core::inventory::container::Container;
 use steel_core::player::game_mode;
@@ -18,7 +19,6 @@ use steel_core::server::Server;
 use steel_core::world::World;
 use steel_registry::item_stack::ItemStack;
 use steel_registry::{REGISTRY, RegistryExt};
-use steel_utils::math::Vector3;
 use steel_utils::types::InteractionHand;
 use uuid::Uuid;
 
@@ -198,7 +198,7 @@ impl FlintPlayer for SteelTestPlayer {
 
         // Create a block hit result
         let hit_result = BlockHitResult {
-            location: Vector3::new(
+            location: DVec3::new(
                 f64::from(steel_pos.x()) + 0.5,
                 f64::from(steel_pos.y()) + 0.5,
                 f64::from(steel_pos.z()) + 0.5,
