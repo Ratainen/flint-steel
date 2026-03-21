@@ -7,9 +7,10 @@
 use std::sync;
 use std::sync::Arc;
 
-use flint_core::test_spec::{BlockFace, PlayerSlot};
+use flint_core::test_spec::{BlockFace, GameMode, PlayerSlot};
 use flint_core::{BlockPos, FlintPlayer, Item};
 use glam::DVec3;
+use rustc_hash::FxHashMap;
 use steel_core::behavior::BlockHitResult;
 use steel_core::inventory::container::Container;
 use steel_core::player::game_mode;
@@ -17,9 +18,11 @@ use steel_core::player::player_inventory::PlayerInventory;
 use steel_core::player::{ClientInformation, GameProfile, Player, PlayerConnection};
 use steel_core::server::Server;
 use steel_core::world::World;
+use steel_registry::data_components::ComponentData;
 use steel_registry::item_stack::ItemStack;
 use steel_registry::{REGISTRY, RegistryExt};
-use steel_utils::types::InteractionHand;
+use steel_utils::Identifier;
+use steel_utils::types::{GameType, InteractionHand};
 use uuid::Uuid;
 
 use crate::convert::{flint_face_to_direction, flint_pos_to_steel};
@@ -120,6 +123,7 @@ const fn player_slot_to_index(slot: PlayerSlot) -> usize {
         PlayerSlot::Leggings => 37,
         PlayerSlot::Chestplate => 38,
         PlayerSlot::Helmet => 39,
+        PlayerSlot::None => todo!(),
     }
 }
 
@@ -136,7 +140,7 @@ fn flint_item_to_stack(item: &Item) -> ItemStack {
         &item.id
     };
 
-    let identifier = steel_utils::Identifier::vanilla(item_id.to_string());
+    let identifier = Identifier::vanilla(item_id.to_string());
 
     // Look up the item in the registry
     if let Some(item_ref) = REGISTRY.items.by_key(&identifier) {
@@ -151,15 +155,37 @@ fn flint_item_to_stack(item: &Item) -> ItemStack {
 ///
 /// Returns `None` for empty stacks. Adds the `minecraft:` namespace prefix
 /// to the item ID for consistency with Flint's expected format.
-fn stack_to_flint_item(stack: &ItemStack) -> Option<Item> {
+fn stack_to_flint_item(stack: &ItemStack, requested_data: Vec<String>) -> Option<Item> {
     if stack.is_empty() {
         return None;
     }
 
     let id = format!("minecraft:{}", stack.item.key.path);
+    let mut map: FxHashMap<String, String> = FxHashMap::default();
+    for key in requested_data {
+        if let Some(data) = stack.get_effective_value_raw(&Identifier::vanilla(key.clone())) {
+            match data {
+                ComponentData::Empty => {
+                    map.insert(key, "".to_string());
+                }
+                ComponentData::Bool(b) => {
+                    map.insert(key, b.to_string());
+                }
+                ComponentData::I32(b) => {
+                    map.insert(key, b.to_string());
+                }
+                ComponentData::Float(b) => {
+                    map.insert(key, b.to_string());
+                }
+                // TODO: handle other data types then needed
+                _ => {}
+            }
+        }
+    }
     Some(Item {
         id,
         count: stack.count.try_into().unwrap_or(1),
+        data: map,
     })
 }
 
@@ -172,12 +198,12 @@ impl FlintPlayer for SteelTestPlayer {
         inv.set_item(index, stack);
     }
 
-    fn get_slot(&self, slot: PlayerSlot) -> Option<Item> {
+    fn get_slot(&self, slot: PlayerSlot, requested_data: Vec<String>) -> Option<Item> {
         let index = player_slot_to_index(slot);
 
         let inv = self.player.inventory.lock();
         let stack = inv.get_item(index);
-        stack_to_flint_item(stack)
+        stack_to_flint_item(stack, requested_data)
     }
 
     fn select_hotbar(&mut self, slot: u8) {
@@ -220,6 +246,15 @@ impl FlintPlayer for SteelTestPlayer {
 
         tracing::debug!("use_item_on({pos:?}, {face:?}) -> {result:?}");
     }
+
+    fn set_game_mode(&mut self, mode: GameMode) {
+        self.player.game_mode.store(match mode {
+            GameMode::Survival => GameType::Survival,
+            GameMode::Creative => GameType::Creative,
+            GameMode::Adventure => GameType::Adventure,
+            GameMode::Spectator => GameType::Spectator,
+        });
+    }
 }
 
 #[cfg(test)]
@@ -239,7 +274,7 @@ mod tests {
         player.set_slot(PlayerSlot::Hotbar1, Some(&item));
 
         let retrieved = player
-            .get_slot(PlayerSlot::Hotbar1)
+            .get_slot(PlayerSlot::Hotbar1, vec![])
             .expect("Slot not found");
         assert_eq!(retrieved.id, "minecraft:stone");
     }
