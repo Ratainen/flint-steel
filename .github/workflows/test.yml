@@ -14,7 +14,7 @@ jobs:
       - name: Clone SteelMC
         uses: actions/checkout@v6
         with:
-          repository: JunkyDeveloper/SteelMC
+          repository: Steel-Foundation/SteelMC
           path: SteelMC
 
       - name: Checkout flint-steel
