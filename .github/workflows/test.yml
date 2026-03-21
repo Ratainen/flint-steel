@@ -15,7 +15,6 @@ jobs:
         uses: actions/checkout@v6
         with:
           repository: JunkyDeveloper/SteelMC
-          ref: dimensions_new
           path: SteelMC
 
       - name: Checkout flint-steel
@@ -23,11 +22,11 @@ jobs:
         with:
           path: flint-steel
 
-      - name: Clone JunkysGenerator
+      - name: Clone FlintBenchmark
         uses: actions/checkout@v6
         with:
-          repository: FlintTestMC/JunkysGenerator
-          path: flint/JunkysGenerator
+          repository: FlintTestMC/FlintBenchmark
+          path: flint/FlintBenchmark
 
       - name: Setup Rust nightly
         uses: dtolnay/rust-toolchain@nightly
@@ -37,30 +36,6 @@ jobs:
         with:
           workspaces: |
             steel/SteelMC -> target
-            flint/JunkysGenerator -> target
-
-      - name: Build test generators
-        working-directory: flint/JunkysGenerator
-        run: cargo build --release -p create-portal -p destroy-portal
-
-      - name: Generate create-portal tests
-        working-directory: flint/JunkysGenerator/create-portal
-        run: cargo run --release -p create-portal
-
-      - name: Generate destroy-portal tests
-        working-directory: flint/JunkysGenerator/destroy-portal
-        run: cargo run --release -p destroy-portal
-
-      - name: Check generated tests for created-portal
-        working-directory: flint/JunkysGenerator/create-portal
-        run: find ./test -type f -printf '.' | wc -c
-
-      - name: Check generated tests for destroy-portal
-        working-directory: flint/JunkysGenerator/destroy-portal
-        run: find ./test -type f -printf '.' | wc -c
-
-      - name: Clean up generator build artifacts
-        run: rm -rf flint/JunkysGenerator/target
 
       - name: Configure SteelMC patch
         working-directory: flint-steel
@@ -78,7 +53,7 @@ jobs:
         timeout-minutes: 15
         working-directory: flint-steel
         env:
-          TEST_PATH: ${{ github.workspace }}/flint/JunkysGenerator
+          TEST_PATH: ${{ github.workspace }}/flint/FlintBenchmark
         run: cargo test --profile cicd --lib -p flint-steel test_run_all_flint_benchmarks -- --nocapture
 
       - name: Upload Flint summary
