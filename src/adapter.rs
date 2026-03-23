@@ -198,7 +198,7 @@ mod tests {
         let mut registered_block_ids: Vec<String> = Vec::new();
         for (id, behavior) in ITEM_BEHAVIORS.get_behaviors().iter().enumerate() {
             if !behavior.type_name().ends_with("DefaultItemBehavior")
-                && !behavior.type_name().ends_with("BlockItemBehavior")
+                && !behavior.type_name().ends_with("BlockItem")
             {
                 registered_block_ids.push(REGISTRY.items.by_id(id).unwrap().key.to_string());
             }
