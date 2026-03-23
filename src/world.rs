@@ -61,9 +61,17 @@ impl SteelTestWorld {
 
         let dimension = OVERWORLD;
 
+        let generation_pool = Arc::new(
+            rayon::ThreadPoolBuilder::new()
+                .build()
+                .expect("Failed to create rayon thread pool"),
+        );
+
         // Block on async world creation
         let world = rt
-            .block_on(async { World::new_with_config(rt.clone(), dimension, 0, config).await })
+            .block_on(async {
+                World::new_with_config(rt.clone(), dimension, 0, config, generation_pool).await
+            })
             .expect("Failed to create test world");
 
         Self {

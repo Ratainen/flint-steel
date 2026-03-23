@@ -52,6 +52,9 @@ tracing = "0.1"
 cipher = "=0.5.0-rc.8"
 crypto-common = "0.2.0"
 
+# Thread pool for world generation
+rayon = "1"
+
 # Hash maps
 rustc-hash = "2.1.1"
 

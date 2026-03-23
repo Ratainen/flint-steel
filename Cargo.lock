@@ -564,6 +564,7 @@ dependencies = [
  "flint-core",
  "futures",
  "glam",
+ "rayon",
  "rustc-hash",
  "serde",
  "steel-core",
