@@ -1,6 +1,6 @@
 # flint-steel
 
-Flint testing framework integration for [SteelMC](https://github.com/FlintTestMC/steel-core). This crate implements the Flint traits (`FlintAdapter`, `FlintWorld`, `FlintPlayer`) so that automated Minecraft tests run against the real SteelMC server logic — no mocks, 100% code reuse with production behavior.
+Flint testing framework integration for [SteelMC](https://github.com/Steel-Foundation/SteelMC). This crate implements the Flint traits (`FlintAdapter`, `FlintWorld`, `FlintPlayer`) so that automated Minecraft tests run against the real SteelMC server logic — no mocks, 100% code reuse with production behavior.
 
 ## How It Works
 
@@ -19,8 +19,8 @@ Join the [Flint Discord](https://discord.gg/kJXKfgx66X) to discuss this project 
 ## Prerequisites
 
 - Rust (edition 2024)
-- [steel-core](https://github.com/FlintTestMC/steel-core) — the SteelMC server crate (workspace dependency)
-- [flint-core](https://github.com/JunkyDeveloper/flint-core) — the Flint testing framework
+- [SteelMC](https://github.com/Steel-Foundation/SteelMC) — the SteelMC server crate (workspace dependency)
+- [flint-core](https://github.com/FlintTestMC/flint-core) — the Flint testing framework
 
 ## Installation
 
