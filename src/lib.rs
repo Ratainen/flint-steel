@@ -79,7 +79,7 @@ fn init_config() {
 
     static INIT: Once = Once::new();
     static TEST_CONFIG: LazyLock<ServerConfig> = LazyLock::new(|| ServerConfig {
-        mc_version: "1.21.11",
+        mc_version: "26.1",
         server_port: 25565,
         seed: String::new(),
         max_players: 20,

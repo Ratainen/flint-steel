@@ -178,7 +178,7 @@ mod tests {
     fn save_summary(summary: &TestSummary) {
         let path = PathBuf::from("log/flint_summary.json");
         if let Some(parent) = path.parent() {
-            fs::create_dir_all(parent).expect("TODO: panic message");
+            fs::create_dir_all(parent).expect("Folder can't be created stopped");
         }
         fs::write(&path, summary.create_ci_output(true))
             .expect("failed to write flint_summary.json");
