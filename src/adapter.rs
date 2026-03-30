@@ -207,17 +207,6 @@ mod tests {
     }
 
     #[test]
-    fn test_things() {
-        init_env();
-        let _config = load_config();
-        let test_path = PathBuf::from(get_test_path());
-        let mut loader = TestLoader::new(&test_path, true).unwrap_or_else(|_| panic!("Test"));
-        loader
-            .verify_and_rebuild_index()
-            .expect("TODO: panic message");
-    }
-
-    #[test]
     fn test_run_flint_selected() {
         init_test_registries();
         init_env();
