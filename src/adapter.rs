@@ -72,7 +72,6 @@ mod tests {
     struct FilterConfig {
         tags: Option<rustc_hash::FxHashMap<String, bool>>,
         implemented_only: Option<bool>,
-        ignore_tags: Option<Vec<bool>>,
         test: Option<String>,
         pattern: Option<String>,
     }
