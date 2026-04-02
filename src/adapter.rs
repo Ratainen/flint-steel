@@ -72,7 +72,6 @@ mod tests {
     struct FilterConfig {
         tags: Option<rustc_hash::FxHashMap<String, bool>>,
         implemented_only: Option<bool>,
-        ignore_tags: Option<Vec<bool>>,
         test: Option<String>,
         pattern: Option<String>,
     }
@@ -178,7 +177,7 @@ mod tests {
     fn save_summary(summary: &TestSummary) {
         let path = PathBuf::from("log/flint_summary.json");
         if let Some(parent) = path.parent() {
-            fs::create_dir_all(parent).expect("TODO: panic message");
+            fs::create_dir_all(parent).expect("Folder can't be created stopped");
         }
         fs::write(&path, summary.create_ci_output(true))
             .expect("failed to write flint_summary.json");
@@ -204,17 +203,6 @@ mod tests {
             }
         }
         registered_block_ids
-    }
-
-    #[test]
-    fn test_things() {
-        init_env();
-        let _config = load_config();
-        let test_path = PathBuf::from(get_test_path());
-        let mut loader = TestLoader::new(&test_path, true).unwrap_or_else(|_| panic!("Test"));
-        loader
-            .verify_and_rebuild_index()
-            .expect("TODO: panic message");
     }
 
     #[test]
