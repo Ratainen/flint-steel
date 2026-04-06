@@ -181,7 +181,7 @@ impl FlintWorld for SteelTestWorld {
 
         // Run a real world tick
         // Note: For testing we run with `runs_normally = true`
-        self.world.tick_b(tick_count, true);
+        self.world.tick_game(tick_count, true);
     }
 
     fn current_tick(&self) -> u64 {
