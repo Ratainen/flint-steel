@@ -123,7 +123,6 @@ const fn player_slot_to_index(slot: PlayerSlot) -> usize {
         PlayerSlot::Leggings => 37,
         PlayerSlot::Chestplate => 38,
         PlayerSlot::Helmet => 39,
-        PlayerSlot::None => todo!(),
     }
 }
 
