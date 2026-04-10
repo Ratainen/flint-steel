@@ -59,8 +59,6 @@ impl SteelTestWorld {
             generator: Arc::new(ChunkGeneratorType::Empty(EmptyChunkGenerator::new())),
         };
 
-        let dimension = OVERWORLD;
-
         let generation_pool = Arc::new(
             rayon::ThreadPoolBuilder::new()
                 .build()
@@ -70,7 +68,7 @@ impl SteelTestWorld {
         // Block on async world creation
         let world = rt
             .block_on(async {
-                World::new_with_config(rt.clone(), dimension, 0, config, generation_pool).await
+                World::new_with_config(rt.clone(), &OVERWORLD, 0, config, generation_pool).await
             })
             .expect("Failed to create test world");
 
