@@ -12,14 +12,15 @@ use flint_core::Block;
 use flint_core::{BlockPos as FlintBlockPos, FlintPlayer, FlintWorld};
 use futures::executor;
 use steel_core::chunk::chunk_access::{ChunkAccess, ChunkStatus};
-use steel_core::chunk::chunk_generator::ChunkGenerator;
 use steel_core::chunk::chunk_holder::ChunkHolder;
-use steel_core::chunk::empty_chunk_generator::EmptyChunkGenerator;
 use steel_core::chunk::proto_chunk::ProtoChunk;
 use steel_core::chunk::section::{ChunkSection, Sections};
-use steel_core::chunk::world_gen_context::ChunkGeneratorType;
+use steel_core::level_data::WorldGenerationSettings;
 use steel_core::world::{World, WorldConfig, WorldStorageConfig};
+use steel_core::worldgen::{ChunkGenerator, ChunkGeneratorType, EmptyChunkGenerator};
 use steel_registry::vanilla_dimension_types::OVERWORLD;
+use steel_utils::Identifier;
+use steel_utils::types::{Difficulty, GameType};
 use steel_utils::{BlockPos, ChunkPos, types::UpdateFlags};
 
 use crate::convert::{flint_block_to_state_id, flint_pos_to_steel, state_id_to_block};
@@ -53,10 +54,27 @@ impl SteelTestWorld {
     pub fn new() -> Self {
         let rt = runtime();
 
+        let dim_id = Identifier::vanilla_static("overworld");
+
         // Create world with RAM-only storage
         let config = WorldConfig {
             storage: WorldStorageConfig::RamOnly,
+            level_data_path: None,
             generator: Arc::new(ChunkGeneratorType::Empty(EmptyChunkGenerator::new())),
+            generation_settings: WorldGenerationSettings {
+                generator: Identifier::new("steel", "empty"),
+                config: toml::Value::Table(toml::value::Table::new()),
+                dimension_type: dim_id.clone(),
+                min_y: OVERWORLD.min_y,
+                height: OVERWORLD.height,
+            },
+            view_distance: 10,
+            simulation_distance: 10,
+            compression: None,
+            is_flat: false,
+            sea_level: 63,
+            default_gamemode: GameType::Survival,
+            difficulty: Difficulty::Normal,
         };
 
         let generation_pool = Arc::new(
@@ -68,7 +86,8 @@ impl SteelTestWorld {
         // Block on async world creation
         let world = rt
             .block_on(async {
-                World::new_with_config(rt.clone(), &OVERWORLD, 0, config, generation_pool).await
+                World::new_with_config(rt.clone(), dim_id, &OVERWORLD, 0, config, generation_pool)
+                    .await
             })
             .expect("Failed to create test world");
 
@@ -105,7 +124,7 @@ impl SteelTestWorld {
             tracing::error!("World has been dropped, cannot load chunk");
             return;
         };
-        let dimension = &world.dimension;
+        let dimension = &world.dimension_type;
         let min_y = dimension.min_y;
         let height = dimension.height;
         let level = chunk_map.world_gen_context.weak_world();

@@ -12,6 +12,7 @@ use flint_core::{BlockPos, FlintPlayer, Item};
 use glam::DVec3;
 use rustc_hash::FxHashMap;
 use steel_core::behavior::BlockHitResult;
+use steel_core::config::RuntimeConfig;
 use steel_core::inventory::container::Container;
 use steel_core::player::game_mode;
 use steel_core::player::player_inventory::PlayerInventory;
@@ -58,12 +59,26 @@ impl SteelTestPlayer {
 
         // Create the player with our test connection
         let player_connection = Arc::new(PlayerConnection::Other(Box::new(connection)));
+        let runtime_config = Arc::new(RuntimeConfig {
+            max_players: 20,
+            view_distance: 10,
+            simulation_distance: 10,
+            online_mode: false,
+            encryption: false,
+            motd: String::new(),
+            use_favicon: false,
+            favicon: String::new(),
+            enforce_secure_chat: false,
+            compression: None,
+            server_links: None,
+        });
         let player = Arc::new_cyclic(|player_weak| {
             let p = Player::new(
                 gameprofile,
                 player_connection,
                 world,
                 sync::Weak::<Server>::new(),
+                runtime_config,
                 -1, // Negative entity ID for test players
                 player_weak,
                 ClientInformation::default(),

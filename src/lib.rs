@@ -44,9 +44,8 @@ pub use world::SteelTestWorld;
 /// Re-export flint types for convenience
 pub use flint_core::{TestLoader, TestRunner};
 
-use std::sync::{Arc, LazyLock, OnceLock};
-use steel_core::config::WorldGeneratorTypes;
-use steel_core::{behavior, config};
+use std::sync::{Arc, OnceLock};
+use steel_core::behavior;
 use steel_registry::{REGISTRY, Registry};
 use tokio::runtime;
 use tokio::runtime::Runtime;
@@ -59,9 +58,6 @@ static FLINT_RUNTIME: OnceLock<Arc<Runtime>> = OnceLock::new();
 /// This must be called before creating any test worlds or adapters.
 /// It's safe to call multiple times - subsequent calls are no-ops.
 pub fn init() {
-    // Initialize server config (required by some steel-core components)
-    init_config();
-
     // Initialize registry
     init_registry();
 
@@ -70,38 +66,6 @@ pub fn init() {
 
     // Initialize runtime
     init_runtime();
-}
-
-/// Initialize the server configuration for testing.
-fn init_config() {
-    use std::sync::Once;
-    use steel_core::config::{ServerConfig, ServerConfigRef};
-
-    static INIT: Once = Once::new();
-    static TEST_CONFIG: LazyLock<ServerConfig> = LazyLock::new(|| ServerConfig {
-        mc_version: "26.1",
-        server_port: 25565,
-        seed: String::new(),
-        max_players: 20,
-        view_distance: 10,
-        simulation_distance: 10,
-        online_mode: false,
-        encryption: false,
-        motd: String::new(),
-        use_favicon: false,
-        favicon: String::new(),
-        enforce_secure_chat: false,
-        compression: None,
-        server_links: None,
-        world_storage_config: config::WorldStorageConfig::Disk {
-            path: "world".to_string(),
-        },
-        world_generator: WorldGeneratorTypes::Empty,
-    });
-
-    INIT.call_once(|| {
-        ServerConfigRef::init(&TEST_CONFIG);
-    });
 }
 
 /// Initialize the `SteelMC` registry.
