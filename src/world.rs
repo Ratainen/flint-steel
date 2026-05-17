@@ -10,7 +10,6 @@ use std::sync::{
 use std::time::Duration;
 
 use flint_core::Block;
-use tokio::time::sleep;
 use flint_core::{BlockPos as FlintBlockPos, FlintPlayer, FlintWorld};
 use rustc_hash::FxHashMap;
 use steel_core::chunk::chunk_access::ChunkStatus;
@@ -23,6 +22,7 @@ use steel_utils::Identifier;
 use steel_utils::locks::SyncMutex;
 use steel_utils::types::{Difficulty, GameType};
 use steel_utils::{BlockPos, ChunkPos, types::UpdateFlags};
+use tokio::time::sleep;
 
 use crate::convert::{flint_block_to_state_id, flint_pos_to_steel, state_id_to_block};
 use crate::player::SteelTestPlayer;
@@ -135,7 +135,8 @@ impl SteelTestWorld {
 
         // Ticket-owned request: adds a ticket and lets the normal scheduling /
         // generation pipeline create the holder and generate it to Full.
-        let handle = chunk_map.request_chunk(chunk_pos, ChunkStatus::Full, ChunkTicketKind::Command);
+        let handle =
+            chunk_map.request_chunk(chunk_pos, ChunkStatus::Full, ChunkTicketKind::Command);
 
         // `World::tick_game` does not drive scheduling (it runs on a separate
         // loop in production), so drive it here until the request is Ready.
